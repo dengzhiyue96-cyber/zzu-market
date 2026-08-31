@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 种子数据：分类 + 郑大教材库 + 测试用户 + 商品 + 求购
  * MongoDB 版本，幂等写入（可重复执行）
  */
@@ -80,7 +80,7 @@ async function main() {
 
   /* ============ 3. 测试用户 ============ */
   const users = [
-    { username: 'admin', nickname: '郑大集市管理员', school_email: 'admin@zzu.edu.cn', major: null, grade: null, campus: '主校区', dormitory: null, verified: 2, role: 'admin' },
+    { username: 'admin', nickname: '郑大二手市场管理员', school_email: 'admin@zzu.edu.cn', major: null, grade: null, campus: '主校区', dormitory: null, verified: 2, role: 'admin' },
     { username: 'zzu_001', nickname: '小明同学（软件学院）', school_email: '202310101@gs.zzu.edu.cn', major: '软件工程', grade: '大三', campus: '主校区', dormitory: '柳园12号楼301', verified: 2, role: 'user' },
     { username: 'zzu_002', nickname: '小美（商学院）', school_email: '2022030402@gs.zzu.edu.cn', major: '会计学', grade: '大四', campus: '南校区', dormitory: '荷园5号楼412', verified: 2, role: 'user' },
   ];

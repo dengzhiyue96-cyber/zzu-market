@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "zzu-market-server",
   "version": "1.0.0",
-  "description": "郑大集市 - 后端服务",
+  "description": "郑大二手市场 - 后端服务",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

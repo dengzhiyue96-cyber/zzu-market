@@ -1,11 +1,11 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+﻿import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Search, BookOpen, GraduationCap, MapPin, Filter, Sparkles, ChevronRight, X, ArrowLeft } from 'lucide-react';
 import { api } from '../lib/http';
 import { useApp } from '../store/app';
 /**
- * 郑大集市·核心特色页：教材课程匹配
+ * 郑大二手市场·核心特色页：教材课程匹配
  * 搜索课程名/院系/年级 → 直接展示学长学姐的二手书
  */
 export default function TextbookPage() {

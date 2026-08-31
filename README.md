@@ -1,4 +1,4 @@
-# 郑大集市 · 项目根 README
+﻿# 郑大二手市场 · 项目根 README
 
 > 🎓 **郑州大学专属二手交易平台** — 方案B（标准版）
 > 技术栈：**Node.js 18 + Express + SQLite（后端）** + **React 18 + TypeScript + Vite + Tailwind（前端）**
@@ -149,4 +149,4 @@ npm run dev          # 开发模式，自动热更新
 2. `server/data` 和 `server/uploads` 目录能不能写（权限问题）
 3. 前端 API 是不是走了 `/api` 代理（vite.config.ts 里配置了）
 
-祝你郑大集市早日做大做强 🎉！
+祝你郑大二手市场早日做大做强 🎉！

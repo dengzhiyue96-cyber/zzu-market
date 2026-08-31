@@ -1,5 +1,5 @@
-/**
- * 郑大集市 - 数据库层（MongoDB）
+﻿/**
+ * 郑大二手市场 - 数据库层（MongoDB）
  * 使用 MongoDB Atlas 免费版，数据持久化，支持云部署
  */
 import dns from 'dns';

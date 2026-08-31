@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useApp } from './store/app';
 import { api } from './lib/http';
@@ -39,7 +39,7 @@ export default function App() {
   const isAuthPage = loc.pathname.startsWith('/login');
   if (loading) return (
     <div className="h-full flex items-center justify-center text-sm text-zinc-500">
-      <span className="animate-pulse">郑大集市加载中...</span>
+      <span className="animate-pulse">郑大二手市场加载中...</span>
     </div>
   );
 

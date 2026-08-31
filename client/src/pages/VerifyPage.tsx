@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, GraduationCap, Upload, CreditCard, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '../lib/http';
@@ -91,7 +91,7 @@ export default function VerifyPage() {
             <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3 mb-4 text-xs text-emerald-700 flex items-start gap-2">
               <CheckCircle2 size={15} className="shrink-0 mt-0.5" />
               <div>
-                <b>提示：</b>如果你还没有收到邮箱验证码，可以直接在浏览器打开你的校园邮箱，查看收件箱中来自「郑大集市」的邮件。
+                <b>提示：</b>如果你还没有收到邮箱验证码，可以直接在浏览器打开你的校园邮箱，查看收件箱中来自「郑大二手市场」的邮件。
                 MVP 阶段为了方便测试，你也可以 <b>直接使用注册后显示的验证码</b>（正式上线会接 SMTP 邮件服务）
               </div>
             </div>
