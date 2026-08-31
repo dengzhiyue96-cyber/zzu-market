@@ -1,0 +1,6 @@
+<!-- pages/index/index.wxml -->
+<web-view
+  src="{{url}}"
+  bindload="handleLoad"
+  binderror="handleError"
+></web-view>

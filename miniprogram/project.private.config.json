@@ -1,0 +1,9 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "zzu-market-miniprogram",
+  "setting": {
+    "compileHotReLoad": true,
+    "urlCheck": false
+  },
+  "condition": {}
+}

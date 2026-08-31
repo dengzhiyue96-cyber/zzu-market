@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Lock, GraduationCap, User, Mail, Shield, AlertCircle, Check } from 'lucide-react';
 import { api } from '../lib/http';
@@ -15,6 +15,37 @@ export default function LoginPage() {
   const [form, setForm] = useState({ username: '', password: '', nickname: '', school_email: '' });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string; code?: string } | null>(null);
+  const [wxLoading, setWxLoading] = useState(false);
+  const [wxMsg, setWxMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+
+  // 微信一键登录（如果是小程序环境，用 wx.login；如果是 H5 浏览器环境，开发模式给个 demo code）
+  async function handleWxLogin() {
+    setWxLoading(true); setWxMsg(null);
+    try {
+      let code = '';
+      // 小程序 web-view 环境
+      if ((window as any).wx && (window as any).wx.miniProgram) {
+        code = await new Promise((resolve, reject) => {
+          (window as any).wx.login({ success: (r: any) => resolve(r.code), fail: reject });
+        });
+      } else {
+        // H5 开发/生产兜底：生成一个 demo code，后端会走"开发模式"自动注册
+        code = 'demo_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        setWxMsg({ type: 'ok', text: '当前非小程序环境，已使用开发模式 code（生产环境将调用微信官方接口）。正在为您创建账号...' });
+      }
+      const r = await api('/api/auth/wx-login', { method: 'POST', data: { code } });
+      if (r.code === 0) {
+        login(r.data.token, r.data.user);
+        setTimeout(() => nav(decodeURIComponent(from)), 600);
+      } else {
+        setWxMsg({ type: 'err', text: r.msg || '微信登录失败' });
+      }
+    } catch (e: any) {
+      setWxMsg({ type: 'err', text: e?.msg || '微信登录异常' });
+    } finally {
+      setWxLoading(false);
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -145,6 +176,29 @@ export default function LoginPage() {
               <button disabled={loading} className="btn-primary w-full h-11 text-sm font-bold">
                 {loading ? '提交中...' : mode === 'login' ? '登 录' : '立即注册 · 加入郑大二手市场'}
               </button>
+
+              {/* 微信一键登录 */}
+              <div className="pt-2">
+                <div className="flex items-center gap-3 my-4">
+                  <div className="h-px flex-1 bg-zinc-200"></div>
+                  <span className="text-[11px] text-zinc-400">或者用微信直接登录</span>
+                  <div className="h-px flex-1 bg-zinc-200"></div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleWxLogin}
+                  disabled={wxLoading}
+                  className="w-full h-11 rounded-full flex items-center justify-center gap-2 bg-[#07C160] text-white text-sm font-bold hover:bg-[#06AE56] active:scale-[0.98] transition shadow-md shadow-[#07C160]/30 disabled:opacity-60"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 5C4.36 5 1 7.91 1 11.5c0 2.05 1.11 3.88 2.85 5.08l-.71 2.14 2.47-1.23c.86.21 1.76.35 2.89.38a6.2 6.2 0 0 1-.49-2.2c0-3.44 3.25-6.22 7.26-6.22.29 0 .57.02.85.05C15.31 6.85 12.18 5 8.5 5zM6 9.2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm5 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm6.66 1.6c-3.47 0-6.29 2.34-6.29 5.22 0 2.88 2.82 5.22 6.29 5.22.76 0 1.49-.12 2.18-.32L21.5 22l-.55-1.68C22.33 19.3 23 17.72 23 16.02c0-2.88-2.82-5.22-6.34-5.22zm-2.4 2.2c.37 0 .66.3.66.66s-.29.66-.66.66-.66-.3-.66-.66.3-.66.66-.66zm4.5 0c.37 0 .66.3.66.66s-.29.66-.66.66-.66-.3-.66-.66.3-.66.66-.66z"/></svg>
+                  {wxLoading ? '微信登录中...' : '微信一键登录 · 不用填账号'}
+                </button>
+                {wxMsg && (
+                  <div className={`mt-3 rounded-xl p-3 text-xs ${wxMsg.type === 'ok' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
+                    {wxMsg.text}
+                  </div>
+                )}
+              </div>
 
               {/* 快捷测试账号 */}
               <div className="rounded-xl bg-zinc-50 border border-zinc-100 p-3 text-[11px] text-zinc-500 space-y-1">

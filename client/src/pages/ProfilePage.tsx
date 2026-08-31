@@ -1,5 +1,5 @@
 ﻿import { Link, useNavigate } from 'react-router-dom';
-import { ChevronRight, LogOut, Settings, Package, Heart, MessageCircle, Shield, Edit3, MapPin, BarChart3, Upload, CircleHelp, Bell } from 'lucide-react';
+import { ChevronRight, LogOut, Settings, Package, Heart, MessageCircle, Shield, Edit3, MapPin, BarChart3, Upload, CircleHelp, Bell, Crown } from 'lucide-react';
 import { useApp } from '../store/app';
 import { verifiedBadge, campusColor } from '../lib/utils';
 import { api } from '../lib/http';
@@ -44,6 +44,10 @@ export default function ProfilePage() {
     {
       title: '工具与设置',
       items: [
+        ...(me.role === 'admin' ? [{
+          icon: Crown, label: '🛡 管理后台', desc: '数据看板 / 下架商品 / 封禁用户 / 处理举报',
+          to: '/admin', tag: { text: '管理员专属', cls: 'zzu-badge-gold text-[#522B75]' } as any,
+        }] : []),
         { icon: Edit3, label: '编辑个人资料', desc: '昵称/头像/专业/宿舍/联系方式', to: '/me/profile' },
         { icon: Upload, label: '发布闲置', desc: '快把你宿舍的宝藏转给学弟学妹～', to: '/publish', primary: true },
         { icon: BarChart3, label: '经营数据（即将上线）', desc: '访问量/咨询量/成交统计', to: '' },

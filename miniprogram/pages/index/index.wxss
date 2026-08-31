@@ -1,0 +1,5 @@
+/* pages/index/index.wxss */
+page {
+  background: linear-gradient(160deg, #6A3A91, #8B4FBD);
+  height: 100vh;
+}

@@ -22,8 +22,12 @@ export default function NavBar() {
               className={({ isActive }) => `
                 relative flex flex-col items-center justify-center gap-0.5 py-2.5 text-[11px] transition
                 ${it.primary
-                  ? `-mt-4 mx-auto w-14 h-14 rounded-full bg-brand text-white shadow-lg shadow-brand/30 ${isActive ? 'bg-brand-dark' : ''}`
-                  : isActive ? 'text-brand font-medium' : 'text-zinc-500'}
+                  ? `-mt-4 mx-auto w-14 h-14 rounded-full text-white shadow-glow
+                     ${isActive
+                       ? 'bg-gradient-to-br from-brand-dark via-brand to-gold-dark'
+                       : 'bg-gradient-to-br from-brand via-[#8B4FBD] to-gold-dark'}
+                    `
+                  : isActive ? 'text-brand font-semibold' : 'text-zinc-500'}
               `}
             >
               <it.icon size={it.primary ? 22 : 20} strokeWidth={2.2} />

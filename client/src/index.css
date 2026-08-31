@@ -4,27 +4,79 @@
 
 html, body, #root { height: 100%; }
 body {
-  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #F7F7F8;
+  font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #FAFAFA;
   -webkit-font-smoothing: antialiased;
-  color: #171717;
+  color: #1A1A1A;
+}
+
+/* ============ 郑大二手市场 启动页 ============ */
+.splash-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #6A3A91 0%, #8B4FBD 55%, #522B75 100%);
+  color: #fff;
+  animation: splashFade 2.4s ease-out forwards;
+}
+@keyframes splashFade {
+  0%   { opacity: 1; }
+  75%  { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+.splash-logo {
+  width: 112px; height: 112px; border-radius: 28px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 20px 50px -10px rgba(0,0,0,0.35);
+  margin-bottom: 24px;
+  animation: logoPulse 1.6s ease-in-out infinite alternate;
+}
+@keyframes logoPulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.04); }
+}
+.splash-title {
+  font-size: 28px; font-weight: 700; letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.splash-sub {
+  margin-top: 10px; font-size: 13px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.75);
+}
+.splash-tag {
+  position: absolute; bottom: 48px;
+  font-size: 12px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.5);
+}
+.splash-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(201,166,88,0.35);
+  animation: ringExpand 2.2s ease-out infinite;
+}
+@keyframes ringExpand {
+  0%   { width: 150px; height: 150px; opacity: 0.8; }
+  100% { width: 340px; height: 340px; opacity: 0; }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-1 rounded-full bg-brand text-white font-medium transition active:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-1 rounded-full bg-zzu-gradient text-white font-medium shadow-glow transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-outline {
     @apply inline-flex items-center justify-center gap-1 rounded-full border border-zinc-200 bg-white text-zinc-700 font-medium transition active:bg-zinc-50;
   }
   .card {
-    @apply bg-white rounded-xl border border-zinc-100 shadow-[0_1px_2px_rgba(0,0,0,0.04)];
+    @apply bg-white rounded-2xl border border-zinc-100 shadow-[0_1px_2px_rgba(0,0,0,0.04)];
   }
   .chip {
     @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-100 text-zinc-700;
   }
   .chip-brand {
-    @apply bg-brand/10 text-brand;
+    @apply bg-brand-100 text-brand border border-brand/10;
+  }
+  .chip-gold {
+    @apply bg-gold-soft text-gold-dark border border-gold/10;
   }
   .input {
     @apply w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20;
@@ -33,7 +85,7 @@ body {
     @apply w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20 resize-none;
   }
   .tab-active {
-    @apply text-brand border-b-2 border-brand font-medium;
+    @apply text-brand border-b-2 border-brand font-semibold;
   }
 }
 
@@ -42,7 +94,9 @@ body {
   @apply rounded-2xl px-3 py-2 text-sm max-w-[78%] leading-relaxed break-words;
 }
 .bubble-me {
-  @apply bg-brand text-white rounded-br-md;
+  background: linear-gradient(135deg, #6A3A91, #8B4FBD);
+  color: #fff;
+  border-bottom-right-radius: 6px;
 }
 .bubble-peer {
   @apply bg-white text-zinc-800 rounded-bl-md border border-zinc-100;
@@ -51,3 +105,13 @@ body {
 /* 隐藏滚动条 */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* 品牌文字：郑大紫 + 金点缀 */
+.zzu-badge {
+  background: linear-gradient(135deg, #6A3A91, #8B4FBD);
+  color: #fff;
+}
+.zzu-badge-gold {
+  background: linear-gradient(135deg, #C9A658, #E6C07A);
+  color: #522B75;
+}

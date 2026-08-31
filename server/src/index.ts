@@ -13,6 +13,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'zzu-market-secret-2025-change-me';
 const UPLOAD_DIR = path.resolve(__dirname, '../uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
+const WX_APPID = process.env.WX_APPID || '';
+const WX_APPSECRET = process.env.WX_APPSECRET || '';
+const HOST = process.env.HOST || ''; // 部署域名，传给小程序端用
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -112,6 +116,254 @@ app.post('/api/auth/login', async (req, res) => {
   const token = jwt.sign({ id: row.id, username: row.username, role: row.role }, JWT_SECRET, { expiresIn: '30d' });
   const user = pick(row, ['id', 'username', 'nickname', 'avatar', 'student_id', 'school_email', 'major', 'grade', 'campus', 'dormitory', 'verified', 'role']);
   res.json(ok({ token, user }));
+});
+
+/* ============== 微信一键登录（小程序 / 网页授权通用） ============== */
+app.post('/api/auth/wx-login', async (req, res) => {
+  const { code, avatar, nickname } = req.body || {};
+  if (!code) return res.json(fail('缺少微信登录 code'));
+
+  // 开发兜底：没有配置 AppID/AppSecret 时，用 code 作为 openid 的稳定键（方便本地测试）
+  let openid = '';
+  let unionid = '';
+  if (WX_APPID && WX_APPSECRET) {
+    try {
+      const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${WX_APPID}&secret=${WX_APPSECRET}&js_code=${encodeURIComponent(code)}&grant_type=authorization_code`;
+      const resp = await (globalThis as any).fetch(url);
+      const data = await resp.json();
+      if (data.errcode) return res.json(fail(`微信登录失败：${data.errmsg || data.errcode}`));
+      openid = data.openid;
+      unionid = data.unionid || '';
+    } catch (e: any) {
+      return res.json(fail('微信接口调用失败：' + (e.message || e)));
+    }
+  } else {
+    // 开发模式：用 code 做伪 openid，保证流程能跑通
+    openid = 'dev_' + require('crypto').createHash('md5').update(String(code)).digest('hex').slice(0, 24);
+  }
+
+  // 查用户，没有就注册一个
+  let row: any = await C.users().findOne({ $or: [{ wx_openid: openid }, ...(unionid ? [{ wx_unionid: unionid }] : [])] });
+  if (!row) {
+    const id = await getNextId('users');
+    const now = Date.now();
+    const username = 'wx_' + openid.slice(-10);
+    row = {
+      id, username, password: bcrypt.hashSync(Math.random().toString(36), 10),
+      nickname: nickname || ('微信同学' + openid.slice(-4)),
+      avatar: avatar || null, student_id: null, school_email: null,
+      verified: 0, verify_code: '', role: 'user',
+      wx_openid: openid, wx_unionid: unionid || null,
+      created_at: now, updated_at: now,
+    };
+    await C.users().insertOne(row);
+  } else {
+    // 补头像和昵称
+    const patch: any = { updated_at: Date.now() };
+    if (nickname && !row.nickname) patch.nickname = nickname;
+    if (avatar && !row.avatar) patch.avatar = avatar;
+    if (Object.keys(patch).length > 1) {
+      await C.users().updateOne({ id: row.id }, { $set: patch });
+      Object.assign(row, patch);
+    }
+  }
+
+  const token = jwt.sign({ id: row.id, username: row.username, role: row.role }, JWT_SECRET, { expiresIn: '30d' });
+  const user = pick(row, ['id', 'username', 'nickname', 'avatar', 'student_id', 'school_email', 'major', 'grade', 'campus', 'dormitory', 'verified', 'role']);
+  res.json(ok({ token, user, is_new: true }));
+});
+
+/* ============== 管理员鉴权 ============== */
+function adminOnly() {
+  return (req: Request & { user?: JWTUser }, _res: Response, next: NextFunction) => {
+    const u = req.user as any;
+    if (!u || u.role !== 'admin') return _res.status(403).json(fail('无权限，仅管理员可访问'));
+    next();
+  };
+}
+
+/* ============================================================
+ * 8. 管理员后台
+ * ============================================================ */
+app.get('/api/admin/stats', auth(), adminOnly(), async (_req, res) => {
+  const now = Date.now();
+  const dayStart = now - 24 * 3600 * 1000;
+  const weekStart = now - 7 * 24 * 3600 * 1000;
+
+  const [
+    users, usersNew, verifiedUsers,
+    products, productsActive, productsSold, productsToday,
+    wanted, wantedActive,
+    chats, messages,
+    reports, reportsPending,
+    favorites,
+  ] = await Promise.all([
+    C.users().countDocuments(),
+    C.users().countDocuments({ created_at: { $gte: dayStart } }),
+    C.users().countDocuments({ verified: { $gte: 1 } }),
+    C.products().countDocuments(),
+    C.products().countDocuments({ status: 1 }),
+    C.products().countDocuments({ status: 2 }),
+    C.products().countDocuments({ created_at: { $gte: dayStart } }),
+    C.wanted().countDocuments(),
+    C.wanted().countDocuments({ status: 1 }),
+    C.chats().countDocuments(),
+    C.messages().countDocuments(),
+    C.reports().countDocuments(),
+    C.reports().countDocuments({ handled: 0 }),
+    C.favorites().countDocuments(),
+  ]);
+
+  // 近 7 天用户注册趋势
+  const trend = await Promise.all(
+    Array.from({ length: 7 }).map(async (_, i) => {
+      const d0 = now - (6 - i) * 24 * 3600 * 1000;
+      const d1 = d0 + 24 * 3600 * 1000;
+      const [u, p, w] = await Promise.all([
+        C.users().countDocuments({ created_at: { $gte: d0, $lt: d1 } }),
+        C.products().countDocuments({ created_at: { $gte: d0, $lt: d1 } }),
+        C.wanted().countDocuments({ created_at: { $gte: d0, $lt: d1 } }),
+      ]);
+      const date = new Date(d0);
+      return { day: `${date.getMonth() + 1}/${date.getDate()}`, users: u, products: p, wanted: w };
+    })
+  );
+
+  // GMV 估算：所有已售商品价格加总
+  const soldList = await C.products().find({ status: 2 }, { projection: { price: 1 } }).toArray();
+  const gmv = soldList.reduce((s, p: any) => s + Number(p.price || 0), 0);
+
+  res.json(ok({
+    summary: {
+      users, usersNew, verifiedUsers,
+      products, productsActive, productsSold, productsToday,
+      wanted, wantedActive,
+      chats, messages,
+      reports, reportsPending,
+      favorites,
+      gmv,
+    },
+    weekTrend: trend,
+  }));
+});
+
+/* 商品列表（后台，包含下架/删除） */
+app.get('/api/admin/products', auth(), adminOnly(), async (req, res) => {
+  const page = Math.max(1, Number(req.query.page || 1));
+  const size = Math.min(100, Number(req.query.size || 20));
+  const filter: any = {};
+  if (req.query.status && req.query.status !== 'all') filter.status = Number(req.query.status);
+  if (req.query.keyword) {
+    filter.$or = [
+      { title: { $regex: String(req.query.keyword), $options: 'i' } },
+      { id: Number(req.query.keyword) || -1 },
+    ];
+  }
+  const [list, total] = await Promise.all([
+    C.products().aggregate(productPipeline(filter, { skip: (page - 1) * size, limit: size })).toArray(),
+    C.products().countDocuments(filter),
+  ]);
+  res.json(ok({ list, total, page, size }));
+});
+
+/* 修改商品状态：下架=0，在售=1，已售=2，删除=3 */
+app.put('/api/admin/products/:id', auth(), adminOnly(), async (req: any, res) => {
+  const id = Number(req.params.id);
+  const { status, action } = req.body || {};
+  let newStatus = Number(status);
+  // 兼容 action 参数
+  if (action === 'offline') newStatus = 0;
+  if (action === 'online') newStatus = 1;
+  if (action === 'sold') newStatus = 2;
+  if (action === 'delete') newStatus = 3;
+  if (![0, 1, 2, 3].includes(newStatus)) return res.json(fail('状态值错误'));
+  await C.products().updateOne({ id }, { $set: { status: newStatus, updated_at: Date.now() } });
+  res.json(ok(null, '操作成功'));
+});
+
+/* 用户列表 */
+app.get('/api/admin/users', auth(), adminOnly(), async (req, res) => {
+  const page = Math.max(1, Number(req.query.page || 1));
+  const size = Math.min(100, Number(req.query.size || 20));
+  const filter: any = {};
+  if (req.query.keyword) {
+    const kw = String(req.query.keyword);
+    filter.$or = [
+      { username: { $regex: kw, $options: 'i' } },
+      { nickname: { $regex: kw, $options: 'i' } },
+      { school_email: { $regex: kw, $options: 'i' } },
+      { id: Number(kw) || -1 },
+    ];
+  }
+  if (req.query.verified && req.query.verified !== 'all') filter.verified = Number(req.query.verified);
+  const [rows, total] = await Promise.all([
+    C.users().find(filter, {
+      projection: { _id: 0, password: 0, verify_code: 0 },
+      sort: { created_at: -1 }, skip: (page - 1) * size, limit: size,
+    }).toArray(),
+    C.users().countDocuments(filter),
+  ]);
+  res.json(ok({ list: rows, total, page, size }));
+});
+
+/* 修改用户：禁用/启用、改角色、通过认证 */
+app.put('/api/admin/users/:id', auth(), adminOnly(), async (req: any, res) => {
+  const id = Number(req.params.id);
+  const { action, role, verified } = req.body || {};
+  const $set: any = { updated_at: Date.now() };
+  if (role) $set.role = role;
+  if (verified !== undefined) $set.verified = Number(verified);
+  if (action === 'ban') $set.role = 'banned';
+  if (action === 'unban') $set.role = 'user';
+  if (Object.keys($set).length <= 1) return res.json(fail('没有可修改的字段'));
+  await C.users().updateOne({ id }, { $set });
+  res.json(ok(null, '操作成功'));
+});
+
+/* 求购列表 + 修改状态 */
+app.get('/api/admin/wanted', auth(), adminOnly(), async (req, res) => {
+  const page = Math.max(1, Number(req.query.page || 1));
+  const size = Math.min(100, Number(req.query.size || 20));
+  const filter: any = {};
+  if (req.query.status && req.query.status !== 'all') filter.status = Number(req.query.status);
+  if (req.query.keyword) {
+    filter.$or = [
+      { title: { $regex: String(req.query.keyword), $options: 'i' } },
+      { desc: { $regex: String(req.query.keyword), $options: 'i' } },
+    ];
+  }
+  const rows = await C.wanted().find(filter, { sort: { created_at: -1 }, skip: (page - 1) * size, limit: size }).toArray();
+  const total = await C.wanted().countDocuments(filter);
+  res.json(ok({ list: rows, total, page, size }));
+});
+
+app.put('/api/admin/wanted/:id', auth(), adminOnly(), async (req: any, res) => {
+  const id = Number(req.params.id);
+  const { status, action } = req.body || {};
+  let newStatus = Number(status);
+  if (action === 'offline') newStatus = 0;
+  if (action === 'online') newStatus = 1;
+  if (action === 'delete') newStatus = 2;
+  if (![0, 1, 2].includes(newStatus)) return res.json(fail('状态值错误'));
+  await C.wanted().updateOne({ id }, { $set: { status: newStatus, updated_at: Date.now() } });
+  res.json(ok(null, '操作成功'));
+});
+
+/* 举报列表 + 处理 */
+app.get('/api/admin/reports', auth(), adminOnly(), async (req, res) => {
+  const page = Math.max(1, Number(req.query.page || 1));
+  const size = Math.min(100, Number(req.query.size || 20));
+  const filter: any = {};
+  if (req.query.handled && req.query.handled !== 'all') filter.handled = Number(req.query.handled);
+  const rows = await C.reports().find(filter, { sort: { created_at: -1 }, skip: (page - 1) * size, limit: size }).toArray();
+  const total = await C.reports().countDocuments(filter);
+  res.json(ok({ list: rows, total, page, size }));
+});
+
+app.put('/api/admin/reports/:id', auth(), adminOnly(), async (req: any, res) => {
+  const id = Number(req.params.id);
+  await C.reports().updateOne({ id }, { $set: { handled: 1, handled_at: Date.now() } });
+  res.json(ok(null, '已标记处理完成'));
 });
 
 app.post('/api/user/verify-school', auth(), async (req: any, res) => {

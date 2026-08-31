@@ -1,0 +1,4 @@
+/* app.wxss —— 全局样式（其实只有一个 web-view 页面，留空也行） */
+page {
+  background-color: #6A3A91;
+}
