@@ -5,8 +5,8 @@ App({
     // 注意：必须在微信公众平台 → 开发管理 → 业务域名 里把这个域名加入白名单
     ONLINE_URL: 'https://zzu-market-296238-8-1467010136.sh.run.tcloudbase.com/',
     // 小程序 AppID 和 AppSecret（申请后填下面两个字段，可以放到后端作为环境变量，更安全）
-    APPID: 'your-wx-appid-here',
-    APPSECRET: 'your-wx-appsecret-here',
+    APPID: 'wx6e68035ec1e69185',
+    APPSECRET: 'PLEASE_FILL_IN_APPSECRET_FROM_MP_BACKGROUND',
   },
 
   onLaunch() {
