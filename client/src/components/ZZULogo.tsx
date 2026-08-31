@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * 郑大二手市场 官方 Logo（SVG，纯代码矢量，无需图片）
+ * ZZU二手市场 官方 Logo（SVG，纯代码矢量，无需图片）
  * 风格：郑大紫 + 金色点缀 + 书本/盾牌造型
  */
 
@@ -20,7 +20,7 @@ const ZZULogo: React.FC<Props> = ({ size = 40, withText = false, className = '' 
         viewBox="0 0 64 64"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        aria-label="郑大二手市场 Logo"
+        aria-label="ZZU二手市场 Logo"
       >
         {/* 外框圆角盾牌 */}
         <defs>
@@ -59,7 +59,7 @@ const ZZULogo: React.FC<Props> = ({ size = 40, withText = false, className = '' 
       {withText && (
         <div className="leading-tight">
           <div className="font-display font-bold text-[15px] text-brand tracking-wide">
-            郑大二手市场
+            ZZU二手市场
           </div>
           <div className="text-[10px] text-gold-dark tracking-[2px]">
             ZHU · ZHOU · UNIV

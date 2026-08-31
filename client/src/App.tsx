@@ -69,7 +69,7 @@ export default function App() {
 
   if (loading) return (
     <div className="h-full flex items-center justify-center text-sm text-zinc-500">
-      <span className="animate-pulse">郑大二手市场加载中...</span>
+      <span className="animate-pulse">ZZU二手市场加载中...</span>
     </div>
   );
 

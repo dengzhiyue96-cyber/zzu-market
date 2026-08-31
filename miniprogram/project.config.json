@@ -1,5 +1,5 @@
 {
-  "description": "郑大二手市场 · 微信小程序（web-view 套壳版）",
+  "description": "ZZU二手市场 · 微信小程序（web-view 套壳版）",
   "packOptions": { "ignore": [], "include": [] },
   "setting": {
     "bundle": false,

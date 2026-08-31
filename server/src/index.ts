@@ -1,4 +1,4 @@
-﻿import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
@@ -76,7 +76,7 @@ function productPipeline(filter: any, opts: { skip?: number; limit?: number; sor
 app.get('/api/config', async (_req, res) => {
   const categories = await C.categories().find({}, { projection: { _id: 0, id: 1, name: 1, icon: 1, sort: 1 } }).sort({ sort: 1 }).toArray();
   res.json(ok({
-    site_name: '郑大二手市场',
+    site_name: 'ZZU二手市场',
     campus_list: CAMPUS_LIST,
     condition_list: CONDITION_LIST,
     categories,
@@ -843,7 +843,7 @@ async function start() {
   app.listen(PORT, () => {
     console.log(`
   ┌────────────────────────────────────────────┐
-  │   🎓 郑大二手市场 · 后端服务已启动               │
+  │   🎓 ZZU二手市场 · 后端服务已启动               │
   │   Local:  http://localhost:${PORT}              │
   │   DB:     MongoDB                           │
   │   种子数据: npm run seed                    │

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ImagePlus, BookOpenCheck, MapPin, AlertCircle, X, Upload } from 'lucide-react';
 import { useApp } from '../store/app';
@@ -229,7 +229,7 @@ export default function PublishPage() {
         <div className="rounded-xl bg-amber-50 border border-amber-100 p-3 text-xs text-amber-700 flex gap-2">
           <AlertCircle size={16} className="shrink-0 mt-0.5" />
           <div>
-            <b>郑大二手市场禁止发布：</b><br />
+            <b>ZZU二手市场禁止发布：</b><br />
             假冒伪劣、烟酒、药品、管制物品、虚假身份的商品。违规一次永久封号，情节严重上报学校保卫处。
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function PublishPage() {
           {loading ? '发布中...' : '✨ 确认发布'}
         </button>
         <div className="text-[11px] text-center text-zinc-400">
-          发布即同意《郑大二手市场用户协议》
+          发布即同意《ZZU二手市场用户协议》
         </div>
       </section>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 /**
- * 郑大二手市场 启动页（每次进入网站展示2.4秒，只展示一次）
+ * ZZU二手市场 启动页（每次进入网站展示2.4秒，只展示一次）
  */
 const SplashScreen: React.FC = () => {
   const [show, setShow] = useState(true);
@@ -33,7 +33,7 @@ const SplashScreen: React.FC = () => {
         </svg>
       </div>
 
-      <div className="splash-title">郑大二手市场</div>
+      <div className="splash-title">ZZU二手市场</div>
       <div className="splash-sub">校 内 直 连 · 放 心 交 易</div>
       <div className="splash-tag">ZZU · 郑大同学专属</div>
     </div>

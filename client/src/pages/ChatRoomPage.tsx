@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Send, Image as ImageIcon, MoreHorizontal, ShoppingBag } from 'lucide-react';
 import { api } from '../lib/http';
@@ -92,7 +92,7 @@ export default function ChatRoomPage() {
         <Link to="/chats" className="text-zinc-500 shrink-0"><ArrowLeft size={20} /></Link>
         <div className="flex-1 min-w-0">
           <div className="text-[15px] font-bold truncate">{chat?.peer_name || '会话中...'}</div>
-          <div className="text-[11px] text-zinc-500 truncate">{chat?.unread ? `${chat.unread}条新消息` : '郑大二手市场 · 校内安全聊天'}</div>
+          <div className="text-[11px] text-zinc-500 truncate">{chat?.unread ? `${chat.unread}条新消息` : 'ZZU二手市场 · 校内安全聊天'}</div>
         </div>
         <button className="text-zinc-400"><MoreHorizontal size={20} /></button>
       </header>

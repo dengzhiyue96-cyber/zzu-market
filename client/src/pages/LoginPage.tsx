@@ -79,7 +79,7 @@ export default function LoginPage() {
         <div className="flex items-center gap-2.5">
           <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center font-black text-2xl">郑</div>
           <div>
-            <div className="text-xl font-black">郑大二手市场</div>
+            <div className="text-xl font-black">ZZU二手市场</div>
             <div className="text-sm text-white/80">郑州大学专属二手交易平台</div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function LoginPage() {
         </div>
 
         <div className="text-xs text-white/60">
-          © 2025 郑大二手市场 · 郑州大学学生创业项目 · 只为同学更好服务
+          © 2025 ZZU二手市场 · 郑州大学学生创业项目 · 只为同学更好服务
         </div>
       </div>
 
@@ -113,7 +113,7 @@ export default function LoginPage() {
             <div className="inline-flex items-center gap-2">
               <div className="w-11 h-11 rounded-xl bg-brand text-white flex items-center justify-center font-black text-xl shadow-md shadow-brand/30">郑</div>
               <div className="text-left">
-                <div className="text-xl font-black">郑大二手市场</div>
+                <div className="text-xl font-black">ZZU二手市场</div>
                 <div className="text-xs text-zinc-500">郑州大学专属 · 校内交易</div>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function LoginPage() {
               )}
 
               <button disabled={loading} className="btn-primary w-full h-11 text-sm font-bold">
-                {loading ? '提交中...' : mode === 'login' ? '登 录' : '立即注册 · 加入郑大二手市场'}
+                {loading ? '提交中...' : mode === 'login' ? '登 录' : '立即注册 · 加入ZZU二手市场'}
               </button>
 
               {/* 微信一键登录 */}
@@ -211,7 +211,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6 text-center text-[11px] text-zinc-400">
-            登录/注册即同意《郑大二手市场用户协议》和《隐私保护政策》
+            登录/注册即同意《ZZU二手市场用户协议》和《隐私保护政策》
           </div>
         </div>
       </div>

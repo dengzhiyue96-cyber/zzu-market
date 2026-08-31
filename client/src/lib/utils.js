@@ -1,4 +1,4 @@
-﻿import dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 dayjs.extend(relativeTime);
@@ -13,7 +13,7 @@ export function formatPrice(n) {
         return '';
     return `¥${Number(n).toFixed(Number.isInteger(n) ? 0 : 2)}`;
 }
-export function placeholder(seed, w = 400, h = 300, label = '郑大二手市场') {
+export function placeholder(seed, w = 400, h = 300, label = 'ZZU二手市场') {
     const colors = ['#F2F7FF', '#EAFBF8', '#FEF3C7', '#FCE7F3', '#E5EAFF', '#FFE4E6'];
     const c = colors[Number(seed) % colors.length];
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='${c}'/><stop offset='1' stop-color='#ffffff'/></linearGradient></defs><rect width='${w}' height='${h}' fill='url(#g)'/><text x='50%25' y='52%25' text-anchor='middle' font-size='32' font-family='PingFang SC,sans-serif' fill='rgba(75,63,227,0.65)' font-weight='700'>${label}</text></svg>`;

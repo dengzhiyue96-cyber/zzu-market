@@ -1,4 +1,4 @@
-// app.js —— 郑大二手市场 小程序入口
+// app.js —— ZZU二手市场 小程序入口
 App({
   globalData: {
     // ↓↓ 线上环境填你的生产域名（部署到 CloudBase 之后的地址）↓↓

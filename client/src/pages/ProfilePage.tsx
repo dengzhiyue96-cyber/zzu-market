@@ -1,4 +1,4 @@
-﻿import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, LogOut, Settings, Package, Heart, MessageCircle, Shield, Edit3, MapPin, BarChart3, Upload, CircleHelp, Bell, Crown } from 'lucide-react';
 import { useApp } from '../store/app';
 import { verifiedBadge, campusColor } from '../lib/utils';
@@ -142,7 +142,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="text-center text-[11px] text-zinc-400 pb-6">
-        郑大二手市场 v1.0 · 运行中 · 累计服务 {0} 名郑大同学
+        ZZU二手市场 v1.0 · 运行中 · 累计服务 {0} 名郑大同学
       </div>
     </div>
   );

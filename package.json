@@ -1,8 +1,8 @@
-﻿{
+{
   "name": "zzu-market",
   "version": "1.0.0",
   "private": true,
-  "description": "郑大二手市场 - 郑州大学专属二手交易平台（方案B：H5 + 后端全栈）",
+  "description": "ZZU二手市场 - 郑州大学专属二手交易平台（方案B：H5 + 后端全栈）",
   "scripts": {
     "install:all": "cd server && npm install && cd ../client && npm install",
     "seed": "cd server && npm run seed",

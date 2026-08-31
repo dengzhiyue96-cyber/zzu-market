@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, GraduationCap, ShoppingBag, Sparkles, ChevronRight, MapPin, ArrowRight, Megaphone } from 'lucide-react';
 import { useApp } from '../store/app';
@@ -45,7 +45,7 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-brand flex items-center justify-center text-white font-bold text-lg shadow-md shadow-brand/20">郑</div>
             <div>
-              <div className="text-base font-bold leading-tight">郑大二手市场</div>
+              <div className="text-base font-bold leading-tight">ZZU二手市场</div>
               <div className="text-[11px] text-zinc-500 leading-tight">郑州大学专属 · 校内直连 · 放心交易</div>
             </div>
           </div>
@@ -217,7 +217,7 @@ export default function HomePage() {
       </section>
 
       <div className="py-8 text-center text-[11px] text-zinc-400">
-        © 郑大二手市场 · 郑州大学学生创业项目
+        © ZZU二手市场 · 郑州大学学生创业项目
       </div>
     </div>
   );

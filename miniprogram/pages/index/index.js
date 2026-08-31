@@ -31,14 +31,14 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '郑大二手市场 · 郑大人自己的二手平台',
+      title: 'ZZU二手市场 · 郑大人自己的二手平台',
       path: '/pages/index/index?from=share',
     };
   },
 
   onShareTimeline() {
     return {
-      title: '郑大二手市场 · 郑大人自己的二手平台',
+      title: 'ZZU二手市场 · 郑大人自己的二手平台',
     };
   },
 

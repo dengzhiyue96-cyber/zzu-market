@@ -1,8 +1,8 @@
 {
-  "description": "郑大二手市场 微信小程序（web-view 套壳版）\n使用步骤：\n  1. 打开 微信开发者工具 → 导入项目 → 选择本目录\n  2. AppID 填你注册小程序时拿到的 AppID（见 project.config.json 里的 appid 字段）\n  3. 打开 app.json → 把 pages/index/index.js 里的 ONLINE_URL 换成你的生产域名\n  4. 提交审核 → 上线",
+  "description": "ZZU二手市场 微信小程序（web-view 套壳版）\n使用步骤：\n  1. 打开 微信开发者工具 → 导入项目 → 选择本目录\n  2. AppID 填你注册小程序时拿到的 AppID（见 project.config.json 里的 appid 字段）\n  3. 打开 app.json → 把 pages/index/index.js 里的 ONLINE_URL 换成你的生产域名\n  4. 提交审核 → 上线",
   "pages": ["pages/index/index"],
   "window": {
-    "navigationBarTitleText": "郑大二手市场",
+    "navigationBarTitleText": "ZZU二手市场",
     "navigationBarBackgroundColor": "#6A3A91",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#6A3A91",
@@ -12,7 +12,7 @@
   "sitemapLocation": "sitemap.json",
   "permission": {
     "scope.userInfo": {
-      "desc": "用于你在郑大二手市场快速登录和发布商品"
+      "desc": "用于你在ZZU二手市场快速登录和发布商品"
     }
   }
 }
