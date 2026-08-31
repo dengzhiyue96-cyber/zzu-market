@@ -483,14 +483,14 @@ app.get('/api/chats', auth(), async (req: any, res) => {
       { $group: { _id: '$chat_id', count: { $sum: 1 } } },
     ]).toArray(),
   ]);
-  const prodMap = new Map(products.map((p: any) => [p.id, p]));
-  const userMap = new Map(users.map(u => [u.id, u]));
-  const unreadMap = new Map(unreadCounts.map((u: any) => [u._id, u.count]));
+  const prodMap = new Map<any, any>(products.map((p: any) => [p.id, p]) as any);
+  const userMap = new Map<any, any>(users.map((u: any) => [u.id, u]) as any);
+  const unreadMap = new Map<any, any>(unreadCounts.map((u: any) => [u._id, u.count]) as any);
 
-  const rows = chats.map(c => {
+  const rows = chats.map((c: any) => {
     const isBuyer = c.buyer_id === req.user.id;
-    const peer = userMap.get(isBuyer ? c.seller_id : c.buyer_id);
-    const p = c.product_id ? prodMap.get(c.product_id) : null;
+    const peer: any = userMap.get(isBuyer ? c.seller_id : c.buyer_id);
+    const p: any = c.product_id ? prodMap.get(c.product_id) : null;
     return {
       ...c,
       product_title: p?.title || null, product_cover: p?.cover || null, product_price: p?.price || null, product_status: p?.status || null,

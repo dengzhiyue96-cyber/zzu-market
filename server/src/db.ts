@@ -51,12 +51,13 @@ export function getDB(): Db {
 /** 获取自增ID */
 export async function getNextId(name: string): Promise<number> {
   const db = getDB();
-  const result = await db.collection('counters').findOneAndUpdate(
-    { _id: name },
-    { $inc: { seq: 1 } },
-    { upsert: true, returnDocument: 'after' }
+  const col = db.collection<any>('counters');
+  const result = await col.findOneAndUpdate(
+    { _id: name as any },
+    { $inc: { seq: 1 } } as any,
+    { upsert: true, returnDocument: 'after' as const }
   );
-  return (result as any)?.seq || 1;
+  return (result as any)?.value?.seq || 1;
 }
 
 /** 集合访问器 */
