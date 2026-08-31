@@ -1,0 +1,53 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Search, BookOpen, GraduationCap, MapPin, Filter, Sparkles, ChevronRight, X, ArrowLeft } from 'lucide-react';
+import { api } from '../lib/http';
+import { useApp } from '../store/app';
+/**
+ * 郑大集市·核心特色页：教材课程匹配
+ * 搜索课程名/院系/年级 → 直接展示学长学姐的二手书
+ */
+export default function TextbookPage() {
+    const cfg = useApp((s) => s.config);
+    const loc = useLocation();
+    const nav = useNavigate();
+    const initKw = new URLSearchParams(loc.search).get('course') || '';
+    const [kw, setKw] = useState(initKw);
+    const [dept, setDept] = useState('');
+    const [grade, setGrade] = useState('');
+    const [campus, setCampus] = useState('');
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [filterOpen, setFilterOpen] = useState(false);
+    const deptList = ['全校公共课', '数学与统计学院', '物理工程学院', '信息工程学院', '电气工程学院', '商学院', '外语学院', '马克思主义学院', '基础医学院'];
+    const gradeList = ['大一', '大二', '大三', '大四', '考研'];
+    const dept_f = dept === '全校公共课' ? '' : dept;
+    useEffect(() => {
+        if (!kw && !dept_f && !grade) {
+            setResults([]);
+            return;
+        }
+        setLoading(true);
+        const q = new URLSearchParams({ course_name: kw });
+        if (dept_f)
+            q.set('college', dept_f);
+        if (grade)
+            q.set('grade', grade);
+        api(`/api/textbooks/recommend?${q.toString()}`)
+            .then(r => r.code === 0 && setResults(r.data || []))
+            .finally(() => setLoading(false));
+    }, [kw, dept_f, grade]);
+    const allHot = results.filter(r => r.sell_count);
+    const pending = results.filter(r => !r.sell_count);
+    function goList(tb) {
+        nav(`/list?textbook_id=${tb.id}${campus ? '&campus=' + encodeURIComponent(campus) : ''}`);
+    }
+    return (_jsxs("div", { className: "max-w-xl mx-auto pb-6 min-h-screen", children: [_jsxs("header", { className: "sticky top-0 z-20 bg-gradient-to-b from-emerald-50 via-white to-white backdrop-blur border-b border-zinc-100", children: [_jsxs("div", { className: "px-4 pt-3 pb-3 flex items-center gap-2", children: [_jsx(Link, { to: "/", className: "text-zinc-500 shrink-0", children: _jsx(ArrowLeft, { size: 20 }) }), _jsxs("div", { className: "flex-1 relative", children: [_jsx(Search, { size: 16, className: "absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" }), _jsx("input", { className: "input pl-9 h-11", placeholder: "\u641C\u8BFE\u7A0B\u540D/\u4E66\u540D\uFF1A\u9AD8\u7B49\u6570\u5B66\u3001\u8003\u7814\u82F1\u8BED...", value: kw, onChange: (e) => setKw(e.target.value) })] }), _jsx("button", { onClick: () => setFilterOpen(true), className: "btn-outline h-11 w-11 shrink-0", children: _jsx(Filter, { size: 16 }) })] }), _jsxs("div", { className: "px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar", children: [_jsx("span", { className: `chip !h-7 shrink-0 ${!dept ? '!bg-emerald-100 !text-emerald-700' : ''}`, onClick: () => setDept(''), children: "\u5168\u90E8\u5B66\u9662" }), deptList.slice(0, 6).map(d => (_jsx("button", { onClick: () => setDept(d), className: `chip !h-7 shrink-0 ${dept === d ? '!bg-emerald-100 !text-emerald-700' : ''}`, children: d }, d)))] })] }), _jsx("section", { className: "px-4 pt-4", children: _jsx("div", { className: "rounded-2xl p-4 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 text-white shadow-lg shadow-emerald-200", children: _jsxs("div", { className: "flex items-start gap-3", children: [_jsx("div", { className: "w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0", children: _jsx(Sparkles, { size: 26 }) }), _jsxs("div", { children: [_jsx("div", { className: "text-lg font-bold", children: "\u6559\u6750\u627E\u5BF9\u4EBA \u00B7 \u8BFE\u7A0B\u667A\u80FD\u5339\u914D" }), _jsxs("div", { className: "text-xs text-white/85 mt-1 leading-relaxed", children: ["\u8F93\u5165\u4F60\u7684\u8BFE\u7A0B\uFF0C\u76F4\u63A5\u5BF9\u63A5\u4E0A\u8FC7\u8FD9\u95E8\u8BFE\u7684\u5B66\u957F\u5B66\u59D0\u624B\u91CC\u7684\u6559\u6750", _jsx("br", {}), "\u6BD4\u4E66\u5E97\u4FBF\u5B9C ", _jsx("b", { children: "60%" }), "\uFF0C\u8FD8\u5E26\u4ED6\u4EEC\u7684\u8BFE\u5802\u7B14\u8BB0\u548C\u91CD\u70B9\u6807\u6CE8 \uD83C\uDF1F"] })] })] }) }) }), !kw && !dept_f && !grade && (_jsxs("section", { className: "px-4 pt-5", children: [_jsxs("h2", { className: "text-sm font-bold mb-2.5 flex items-center gap-1.5", children: [_jsx(BookOpen, { size: 14, className: "text-brand" }), " \u70ED\u95E8\u641C\u7D22\u8BFE\u7A0B"] }), _jsx("div", { className: "flex flex-wrap gap-2", children: ['高等数学', '数据结构', '线性代数', '马原', '毛概', '肖秀荣1000题', '大学物理', '模电', '数电', '会计学基础', '大学英语', '系统解剖学'].map(k => (_jsx("button", { onClick: () => setKw(k), className: "chip !h-7 active:bg-zinc-200", children: k }, k))) })] })), _jsxs("section", { className: "px-4 pt-5", children: [_jsx("div", { className: "flex items-center justify-between mb-2.5", children: _jsxs("h2", { className: "text-base font-bold flex items-center gap-1.5", children: [_jsx(GraduationCap, { size: 16, className: "text-brand" }), loading ? '搜索中...' : `匹配结果（${results.length}门课程）`] }) }), !loading && !results.length && (_jsxs("div", { className: "card p-8 text-center", children: [_jsx("div", { className: "text-4xl mb-2", children: "\uD83D\uDCDA" }), _jsx("div", { className: "text-sm text-zinc-500", children: "\u8BD5\u8BD5\u641C\u7D22\u4E0A\u9762\u7684\u70ED\u95E8\u8BFE\u7A0B\u5427" })] })), allHot.length ? (_jsxs("div", { className: "space-y-3 mb-5", children: [_jsx("div", { className: "text-xs font-bold text-zinc-500", children: "\u2705 \u6709\u5B66\u957F\u5B66\u59D0\u5728\u5356 \u00B7 \u76F4\u63A5\u5BF9\u63A5" }), allHot.map(tb => (_jsxs("button", { onClick: () => goList(tb), className: "w-full card p-3.5 text-left active:bg-zinc-50 transition grid grid-cols-[auto,1fr,auto] gap-3 items-center", children: [_jsx("div", { className: "w-12 h-14 rounded-lg bg-emerald-50 border border-emerald-100 text-brand flex items-center justify-center text-2xl", children: "\uD83D\uDCD6" }), _jsxs("div", { className: "min-w-0", children: [_jsx("div", { className: "text-sm font-bold text-zinc-800 truncate", children: tb.book_name }), _jsxs("div", { className: "mt-1 flex flex-wrap gap-1", children: [_jsx("span", { className: "chip chip-brand !py-0 !px-1.5 !text-[10px]", children: tb.course_name || '课程' }), _jsx("span", { className: "chip !bg-zinc-100 !text-zinc-600 !py-0 !px-1.5 !text-[10px]", children: tb.college }), _jsx("span", { className: "chip !bg-zinc-100 !text-zinc-600 !py-0 !px-1.5 !text-[10px]", children: tb.grade })] }), _jsxs("div", { className: "text-[11px] text-zinc-500 mt-1 truncate", children: ["\u4F5C\u8005\uFF1A", tb.author, " \u00B7 ", tb.publisher] }), tb.sample_pid && (_jsxs("div", { className: "text-[11px] text-emerald-600 mt-1 flex items-center gap-1", children: [_jsx(MapPin, { size: 10 }), " ", tb.sample_campus, " \u00B7 ", tb.sample_seller, "\uFF08", tb.sample_grade, "\uFF09\u6302\u7740 \"", tb.sample_title?.slice(0, 10), "\u2026\" \u5356 ", tb.sample_price, "\u5143"] }))] }), _jsxs("div", { className: "flex flex-col items-end gap-1 shrink-0", children: [_jsxs("span", { className: "chip !bg-emerald-100 !text-emerald-700 !py-0.5", children: [tb.sell_count, "\u672C\u5728\u552E"] }), _jsx(ChevronRight, { size: 18, className: "text-zinc-400" })] })] }, tb.id)))] })) : null, pending.length ? (_jsxs("div", { className: "space-y-2", children: [_jsx("div", { className: "text-xs font-bold text-zinc-500", children: "\uD83D\uDCDD \u540C\u8BFE\u7A0B\u4E66\u7C4D\uFF08\u6682\u65F6\u6CA1\u4EBA\u6302 \u00B7 \u4F60\u53EF\u4EE5\u7B2C\u4E00\u4E2A\u53D1\u5E03\uFF09" }), pending.slice(0, 8).map(tb => (_jsxs("div", { className: "card p-3 flex items-center gap-3", children: [_jsx("div", { className: "w-10 h-12 rounded bg-zinc-50 border border-zinc-100 flex items-center justify-center text-lg", children: "\uD83D\uDCD5" }), _jsxs("div", { className: "flex-1 min-w-0", children: [_jsx("div", { className: "text-sm font-medium text-zinc-800 truncate", children: tb.book_name }), _jsxs("div", { className: "text-[11px] text-zinc-500 mt-0.5 flex items-center gap-1.5", children: [_jsx("span", { className: "chip chip-brand !py-0 !px-1.5 !text-[10px]", children: tb.course_name || '课程' }), _jsx("span", { children: tb.college })] })] }), _jsx(Link, { to: `/publish?tb=${tb.id}`, className: "btn-outline h-8 px-3 text-[11px]", children: "\u6211\u6765\u53D1\u5E03" })] }, tb.id)))] })) : null] }), filterOpen && (_jsxs("div", { className: "fixed inset-0 z-50", onClick: () => setFilterOpen(false), children: [_jsx("div", { className: "absolute inset-0 bg-black/40" }), _jsxs("div", { className: "absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-5 max-w-xl mx-auto", onClick: e => e.stopPropagation(), children: [_jsxs("div", { className: "flex items-center justify-between mb-4", children: [_jsx("h3", { className: "text-base font-bold", children: "\u6559\u6750\u7B5B\u9009" }), _jsx("button", { onClick: () => setFilterOpen(false), className: "text-zinc-400", children: _jsx(X, { size: 20 }) })] }), _jsxs("div", { className: "space-y-4 text-sm", children: [_jsx(Sec, { title: "\u5B66\u9662/\u7CFB\u522B", children: _jsx("div", { className: "flex flex-wrap gap-1.5", children: deptList.map(d => (_jsx(Chip, { active: dept === d, onClick: () => setDept(d), children: d }, d))) }) }), _jsx(Sec, { title: "\u5E74\u7EA7", children: _jsxs("div", { className: "flex flex-wrap gap-1.5", children: [_jsx(Chip, { active: !grade, onClick: () => setGrade(''), children: "\u5168\u90E8" }), gradeList.map(g => (_jsx(Chip, { active: grade === g, onClick: () => setGrade(g), children: g }, g)))] }) }), _jsx(Sec, { title: "\u6821\u533A\uFF08\u770B\u5356\u5BB6\uFF09", children: _jsxs("div", { className: "flex flex-wrap gap-1.5", children: [_jsx(Chip, { active: !campus, onClick: () => setCampus(''), children: "\u5168\u90E8" }), cfg?.campus_list.map(c => (_jsx(Chip, { active: campus === c, onClick: () => setCampus(c), children: c }, c)))] }) })] }), _jsx("button", { className: "btn-primary w-full h-11 text-sm mt-6", onClick: () => setFilterOpen(false), children: "\u786E\u5B9A" })] })] }))] }));
+}
+function Sec({ title, children }) {
+    return (_jsxs("div", { children: [_jsx("div", { className: "text-xs font-bold text-zinc-700 mb-2", children: title }), children] }));
+}
+function Chip({ active, onClick, children }) {
+    return (_jsx("button", { onClick: onClick, className: `px-3 h-7 rounded-full text-xs transition ${active ? 'bg-emerald-500 text-white' : 'bg-zinc-100 text-zinc-700'}`, children: children }));
+}

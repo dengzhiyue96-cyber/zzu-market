@@ -1,0 +1,30 @@
+# 防止 node_modules 被提交
+node_modules/
+dist/
+build/
+
+# 数据库 & 上传文件（重要，不能上传到git，都是用户隐私）
+server/data/*.db
+server/data/*.db-*
+server/data/*.wal
+server/data/*.shm
+server/uploads/*
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.production.local
