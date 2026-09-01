@@ -1,6 +1,6 @@
-<!-- pages/index/index.wxml -->
+<!-- pages/index/index.wxml —— 兜底硬编码 src，就算 JS 延迟也不会 404 -->
 <web-view
-  src="{{url}}"
+  src="https://zzushop.top/?platform=mp"
   bindload="handleLoad"
   binderror="handleError"
 ></web-view>
