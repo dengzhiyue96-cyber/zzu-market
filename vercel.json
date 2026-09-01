@@ -1,12 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "vite",
-  "installCommand": "npm run install:all",
+  "framework": null,
   "buildCommand": "npm run build:all",
+  "installCommand": "npm run install:vercel",
+  "build": {
+    "env": {
+      "SERVERLESS": "true"
+    }
+  },
   "functions": {
     "api/index.js": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 30
+      "runtime": "@vercel/node@4"
     }
   },
   "rewrites": [
