@@ -1,7 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:all",
-  "installCommand": "npm run install:vercel",
   "build": {
     "env": {
       "SERVERLESS": "true"
