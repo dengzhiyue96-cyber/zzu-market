@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+﻿import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
@@ -825,7 +825,7 @@ app.post('/api/upload', auth(), async (req: any, res) => {
  * 静态文件服务（生产环境，serve client/dist）
  * ============================================================ */
 const staticDir = path.resolve(__dirname, '../public');
-if (fs.existsSync(staticDir)) {
+if (!process.env.SERVERLESS && fs.existsSync(staticDir)) {
   app.use(express.static(staticDir));
   app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
@@ -840,6 +840,10 @@ if (fs.existsSync(staticDir)) {
  * ============================================================ */
 async function start() {
   await connectDB();
+  if (process.env.SERVERLESS) {
+    console.log('✅ Serverless 模式：已连接 DB，跳过 listen');
+    return;
+  }
   app.listen(PORT, () => {
     console.log(`
   ┌────────────────────────────────────────────┐
@@ -851,4 +855,7 @@ async function start() {
     `);
   });
 }
-start().catch(err => { console.error('启动失败:', err); process.exit(1); });
+start().catch(err => { console.error('启动失败:', err); if (!process.env.SERVERLESS) process.exit(1); });
+
+// Serverless 模式下导出 app 给外部（serverless-http 包装）
+export { app };
