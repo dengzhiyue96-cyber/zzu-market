@@ -844,11 +844,16 @@ if (!process.env.SERVERLESS && fs.existsSync(staticDir)) {
  * 启动
  * ============================================================ */
 async function start() {
-  await connectDB();
   if (process.env.SERVERLESS) {
-    console.log('✅ Serverless 模式：已连接 DB，跳过 listen');
+    // Serverless 模式：异步连 DB（不阻塞），路由自己 getDB() 时会自动连上
+    connectDB().then(() => {
+      console.log('✅ Serverless: MongoDB 已连接');
+    }).catch(err => {
+      console.error('❌ Serverless: MongoDB 连接失败:', err.message);
+    });
     return;
   }
+  await connectDB();
   app.listen(PORT, () => {
     console.log(`
   ┌────────────────────────────────────────────┐
