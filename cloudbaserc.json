@@ -1,0 +1,21 @@
+{
+  "envId": "",
+  "functionRoot": "cloudfunctions",
+  "functions": [
+    {
+      "name": "api",
+      "timeout": 60,
+      "memorySize": 256,
+      "runtime": "Nodejs18",
+      "handler": "index.main",
+      "httpRoutes": [
+        { "path": "/api/*", "target": "api" }
+      ]
+    }
+  ],
+  "hosting": {
+    "root": "public",
+    "index": "index.html",
+    "error": "index.html"
+  }
+}
