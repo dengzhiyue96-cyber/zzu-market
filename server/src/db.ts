@@ -5,9 +5,11 @@
 import dns from 'dns';
 import { MongoClient, Db } from 'mongodb';
 
-// 校园网/本地 DNS 经常拦截 SRV 查询，切到公共 DNS 保证 MongoDB Atlas 能连上
-try { dns.setDefaultResultOrder('ipv4first'); } catch {}
-try { dns.setServers(['223.5.5.5', '119.29.29.29', '8.8.8.8', '1.1.1.1']); } catch {}
+// Vercel/云服务器环境用默认 DNS；本地/校园网需要 ipv4first
+const isServerless = process.env.SERVERLESS === 'true';
+if (!isServerless) {
+  try { dns.setDefaultResultOrder('ipv4first'); } catch {}
+}
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/zzu_market';
 
@@ -16,7 +18,11 @@ let dbInstance: Db | null = null;
 
 export async function connectDB(): Promise<Db> {
   if (dbInstance) return dbInstance;
-  client = new MongoClient(MONGODB_URI);
+  client = new MongoClient(MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 5000,
+    maxPoolSize: 10,
+  });
   await client.connect();
   dbInstance = client.db('zzu_market');
 
