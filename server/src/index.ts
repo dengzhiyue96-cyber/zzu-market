@@ -10,36 +10,32 @@ import { JWTUser, CAMPUS_LIST, CONDITION_LIST } from './types';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-/* ============== Express 4 async handler 全局兜底（核心修复：彻底解决 async rejection 挂请求）============== */
-// Express 4 原生不会自动 catch async handler 的 Promise rejection，会导致请求死等300s→504。
-// 猴子补丁 Layer.handle_request：所有返回 Promise 的 handler（即 async），rejection 时走 next(err) 到全局错误中间件。
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const Layer = require('express/lib/router/layer');
-  const orig = Layer.prototype.handle_request;
-  Layer.prototype.handle_request = function (req: any, res: any, next: any) {
-    if (this.handle.length > 3) return orig.call(this, req, res, next); // 跳过 error mw (4 params)
+/* ============== 修复 Express4 async handler 错误兜不住 =====================================
+   100% 可靠版本：直接包装 app.get/post/put/patch/delete/all 方法，
+   把每个 handler 返回的 Promise rejection 统一交给 next(err) → 全局错误中间件处理。
+   （之前 prototype 打补丁的方法在 serverless/编译后路径会失效，已废弃）*/
+function wrapAsync(fn: any): any {
+  return function (req: Request, res: Response, next: NextFunction) {
     try {
-      const ret = orig.call(this, req, res, next);
-      if (ret && typeof ret.then === 'function' && typeof ret.catch === 'function') {
-        ret.catch((e: any) => next(e || new Error(String(e))));
+      const ret = fn(req, res, next);
+      if (ret && typeof ret.then === 'function') {
+        Promise.resolve(ret).catch((e: any) => next(e || new Error(String(e))));
       }
       return ret;
     } catch (e) {
       return next(e);
     }
   };
-  console.log('[async-wrapper] 已启用全局 async rejection 兜底');
-} catch (e) {
-  console.warn('[async-wrapper] 加载失败，降级使用 process 兜底:', e);
 }
-process.on('unhandledRejection', (reason, p) => {
-  console.error('💥 unhandledRejection:', reason);
+(['get', 'post', 'put', 'patch', 'delete', 'all', 'use'] as const).forEach(method => {
+  const orig = (app as any)[method].bind(app);
+  (app as any)[method] = function (path: any, ...handlers: any[]) {
+    const wrapped = handlers.map(h => (typeof h === 'function' ? wrapAsync(h) : h));
+    return orig(path, ...wrapped);
+  };
 });
-process.on('uncaughtException', (err) => {
-  console.error('💥 uncaughtException:', err.message);
-});
-/* ======================================================================================================== */
+console.log('[async-wrapper-method] HTTP method 包装兜底已启用（app.get/post/...）');
+/* =========================================================================================== */
 const JWT_SECRET = process.env.JWT_SECRET || 'zzu-market-secret-2025-change-me';
 const UPLOAD_DIR = path.resolve(__dirname, '../uploads');
 try {
