@@ -5,11 +5,17 @@
   "description": "ZZU二手市场 - 郑州大学专属二手交易平台（Vercel 免费部署版）",
   "main": "api/index.js",
   "dependencies": {
-    "serverless-http": "^3.2.0"
+    "serverless-http": "^3.2.0",
+    "mongodb": "^6.9.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "dayjs": "^1.11.13"
   },
   "scripts": {
-    "install:all": "cd server && npm install && cd ../client && npm install",
-    "install:vercel": "npm install && npm run install:all",
+    "install:vercel": "npm install",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "seed": "cd server && npm run seed",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
