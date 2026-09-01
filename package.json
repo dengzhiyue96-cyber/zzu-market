@@ -14,7 +14,7 @@
     "dayjs": "^1.11.13"
   },
   "scripts": {
-    "install:vercel": "npm install",
+    "install:vercel": "npm install && cd server && npm install && cd ../client && npm install",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "seed": "cd server && npm run seed",
     "dev:server": "cd server && npm run dev",
