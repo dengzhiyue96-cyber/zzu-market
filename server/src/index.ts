@@ -11,7 +11,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'zzu-market-secret-2025-change-me';
 const UPLOAD_DIR = path.resolve(__dirname, '../uploads');
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+} catch (_e) {
+  // Serverless / 只读文件系统环境下 mkdir 可能失败，忽略即可
+  console.warn('[uploads] 无法创建目录，跳过本地文件存储');
+}
 
 const WX_APPID = process.env.WX_APPID || '';
 const WX_APPSECRET = process.env.WX_APPSECRET || '';
