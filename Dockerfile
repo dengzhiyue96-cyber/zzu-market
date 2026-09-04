@@ -24,7 +24,8 @@ RUN cd client && npm run build
 RUN cd server && npx tsc
 
 # 复制前端构建产物到后端 public 目录
-RUN mkdir -p server/public && cp -r client/dist/* server/public/
+# 注意：client/vite.config.ts 中 outDir='../public'，所以产物在 /app/public/ 而非 client/dist/
+RUN mkdir -p server/public && cp -r public/* server/public/
 
 # ============ 运行阶段 ============
 FROM node:18-alpine
