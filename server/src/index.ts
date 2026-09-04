@@ -128,6 +128,15 @@ app.get('/api/seed', async (req, res) => {
   }
 });
 
+/* ============== 调试：查看 counters 和 categories 状态 ============== */
+app.get('/api/debug/db', async (req, res) => {
+  const key = req.query.key as string;
+  if (key !== 'zzu-seed-2026') return res.status(403).json(fail('密钥错误'));
+  const counters = await C.counters().find({}).toArray();
+  const categories = await C.categories().find({}, { projection: { _id: 0 } }).toArray();
+  res.json(ok({ counters, categories }));
+});
+
 /* ============================================================
  * 1. 用户模块
  * ============================================================ */
