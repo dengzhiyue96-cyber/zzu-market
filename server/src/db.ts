@@ -77,12 +77,10 @@ export function getDB(): Db {
 export async function getNextId(name: string): Promise<number> {
   const db = getDB();
   const col = db.collection<any>('counters');
-  const result = await col.findOneAndUpdate(
-    { _id: name as any },
-    { $inc: { seq: 1 } } as any,
-    { upsert: true, returnDocument: 'after' as const }
-  );
-  return (result as any)?.value?.seq || 1;
+  // 两步法：先 inc，再查询，避免 findOneAndUpdate 返回值兼容问题
+  await col.updateOne({ _id: name }, { $inc: { seq: 1 } }, { upsert: true });
+  const doc = await col.findOne({ _id: name });
+  return doc?.seq || 1;
 }
 
 /** 集合访问器 */
