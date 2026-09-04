@@ -2,11 +2,24 @@
  * 种子数据：分类 + 郑大教材库 + 测试用户 + 商品 + 求购
  * MongoDB 版本，幂等写入（可重复执行）
  */
-import { connectDB, C, getNextId } from './db';
+import { connectDB, C, getNextId, getDB } from './db';
 import bcrypt from 'bcryptjs';
+
+/** 同步 counters 计数器：把每个集合的 seq 设为该集合当前最大 id，避免重复键 */
+async function syncCounters() {
+  const db = getDB();
+  const counters = db.collection<any>('counters');
+  const collections = ['users', 'categories', 'products', 'wanted', 'textbooks', 'chats', 'messages', 'favorites', 'reports'];
+  for (const name of collections) {
+    const maxDoc = await db.collection(name).find({}, { projection: { id: 1 } }).sort({ id: -1 }).limit(1).toArray();
+    const maxId = maxDoc[0]?.id || 0;
+    await counters.updateOne({ _id: name }, { $set: { seq: maxId } }, { upsert: true });
+  }
+}
 
 export async function seedMain() {
   await connectDB();
+  await syncCounters();
   const now = Date.now();
   const hash = bcrypt.hashSync('123456', 10);
 
