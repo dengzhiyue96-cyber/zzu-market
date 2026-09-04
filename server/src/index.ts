@@ -5,6 +5,7 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { connectDB, C, getNextId } from './db';
+import { seedMain } from './seed';
 import { JWTUser, CAMPUS_LIST, CONDITION_LIST } from './types';
 
 const app = express();
@@ -113,6 +114,18 @@ app.get('/api/config', async (_req, res) => {
     condition_list: CONDITION_LIST,
     categories,
   }));
+});
+
+/* ============== 种子数据初始化（需密钥） ============== */
+app.get('/api/seed', async (req, res) => {
+  const key = req.query.key as string;
+  if (key !== 'zzu-seed-2026') return res.status(403).json(fail('密钥错误'));
+  try {
+    const result = await seedMain();
+    res.json(ok(result));
+  } catch (e: any) {
+    res.status(500).json(fail('种子数据写入失败：' + (e?.message || String(e))));
+  }
 });
 
 /* ============================================================

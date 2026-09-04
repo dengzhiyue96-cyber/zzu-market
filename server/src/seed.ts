@@ -5,7 +5,7 @@
 import { connectDB, C, getNextId } from './db';
 import bcrypt from 'bcryptjs';
 
-async function main() {
+export async function seedMain() {
   await connectDB();
   const now = Date.now();
   const hash = bcrypt.hashSync('123456', 10);
@@ -163,7 +163,10 @@ async function main() {
 🛍 测试商品：${prodCount} 个
 📢 求购信息：${wantedCount} 个
   `);
-  process.exit(0);
+  return { categories: categories.length, textbooks: textbooks.length, users: users.length, products: prodCount, wanted: wantedCount };
 }
 
-main().catch(err => { console.error('种子数据写入失败:', err); process.exit(1); });
+// 直接运行时才执行（ts-node seed.ts 或 node dist/seed.js）
+if (require.main === module) {
+  seedMain().then(() => process.exit(0)).catch(err => { console.error('种子数据写入失败:', err); process.exit(1); });
+}
